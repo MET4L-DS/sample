@@ -8,12 +8,16 @@ interface SidebarProps {
 	selectedConversationId: string | null;
 	onSelectConversation: (conversationId: string) => void;
 	onNewConversation: () => void;
+	isCollapsed?: boolean;
+	onToggleCollapsed?: () => void;
 }
 
 export default function Sidebar({
 	selectedConversationId,
 	onSelectConversation,
 	onNewConversation,
+	isCollapsed = false,
+	onToggleCollapsed,
 }: SidebarProps) {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -54,14 +58,28 @@ export default function Sidebar({
 
 	return (
 		<>
-			{/* Mobile Menu Button */}
+			{/* Mobile Menu Button - only show on mobile */}
 			<button
-				className="btn btn-outline-light d-lg-none position-fixed top-0 start-0 m-2 z-index-1000"
+				className="btn btn-outline-light d-lg-none position-fixed top-0 start-0 m-2"
 				onClick={() => setIsOpen(!isOpen)}
 				style={{ zIndex: 1050 }}
 			>
 				☰
 			</button>
+
+			{/* Desktop Menu Button - only show on desktop */}
+			{onToggleCollapsed && (
+				<button
+					className="btn btn-outline-light d-none d-lg-block position-fixed top-0 m-2"
+					onClick={onToggleCollapsed}
+					style={{
+						zIndex: 1050,
+						left: isCollapsed ? "0.5rem" : "292px", // 280px sidebar width + 12px margin
+					}}
+				>
+					☰
+				</button>
+			)}
 
 			{/* Overlay for mobile */}
 			{isOpen && (
@@ -72,16 +90,18 @@ export default function Sidebar({
 				/>
 			)}
 
-			{/* Sidebar */}
+			{/* Sidebar - always visible on desktop (unless collapsed), toggle on mobile */}
 			<div
-				className={`position-fixed position-lg-relative h-100 bg-dark border-end border-secondary d-flex flex-column ${
-					isOpen ? "d-block" : "d-none d-lg-flex"
-				}`}
+				className={`h-100 bg-dark border-end border-secondary d-flex flex-column ${
+					// Mobile: show only when isOpen is true
+					isOpen ? "d-flex position-fixed" : "d-none"
+				} ${
+					// Desktop: show unless collapsed
+					isCollapsed ? "d-lg-none" : "d-lg-flex"
+				} position-lg-static`}
 				style={{
 					width: "280px",
 					zIndex: 1045,
-					left: isOpen ? 0 : "-280px",
-					transition: "left 0.3s ease-in-out",
 				}}
 				data-bs-theme="dark"
 			>

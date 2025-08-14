@@ -9,6 +9,7 @@ export default function HomePage() {
 	const [selectedConversationId, setSelectedConversationId] = useState<
 		string | null
 	>(null);
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
 	const createConversationMutation = trpc.createConversation.useMutation({
 		onSuccess: (conversation) => {
@@ -33,6 +34,8 @@ export default function HomePage() {
 				selectedConversationId={selectedConversationId}
 				onSelectConversation={setSelectedConversationId}
 				onNewConversation={handleNewConversation}
+				isCollapsed={sidebarCollapsed}
+				onToggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
 			/>
 
 			{/* Main Content */}
